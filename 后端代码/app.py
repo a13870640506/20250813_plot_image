@@ -25,8 +25,10 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(META_DIR, exist_ok=True)
 os.makedirs(EXPORT_ROOT, exist_ok=True)
 
+
 def _excel_path(file_id):
     return os.path.join(UPLOAD_DIR, f"{file_id}.xlsx")
+
 
 def _read_excel_head(path, sheet_name, nrows=5):
     try:
@@ -35,12 +37,14 @@ def _read_excel_head(path, sheet_name, nrows=5):
     except Exception as e:
         raise e
 
+
 def _read_excel_full(path, sheet_name):
     try:
         df = pd.read_excel(path, sheet_name=sheet_name, engine="openpyxl")
         return df
     except Exception as e:
         raise e
+
 
 @app.route("/api/excel/upload", methods=["POST"])
 def upload_excel():
@@ -78,6 +82,7 @@ def upload_excel():
     except Exception as e:
         return jsonify({"ok": False, "msg": f"Excel 解析失败: {e}"}), 500
 
+
 @app.route("/api/excel/columns", methods=["GET"])
 def excel_columns():
     file_id = request.args.get("file_id")
@@ -101,6 +106,7 @@ def excel_columns():
         return jsonify({"ok": True, "columns": cols, "time_candidates": time_candidates, "numeric_cols": numeric_cols})
     except Exception as e:
         return jsonify({"ok": False, "msg": f"读取列失败: {e}"}), 500
+
 
 @app.route("/api/plot/preview", methods=["POST"])
 def plot_preview():
@@ -130,6 +136,7 @@ def plot_preview():
         return jsonify(out)
     except Exception as e:
         return jsonify({"ok": False, "msg": f"绘图预览失败: {e}"}), 500
+
 
 @app.route("/api/plot/export", methods=["POST"])
 def plot_export():
@@ -167,6 +174,7 @@ def plot_export():
     except Exception as e:
         return jsonify({"ok": False, "msg": f"导出失败: {e}"}), 500
 
+
 @app.route("/download", methods=["GET"])
 def download():
     path = request.args.get("path")
@@ -178,6 +186,7 @@ def download():
     if not path.startswith(root) or not os.path.exists(path):
         return abort(404)
     return send_file(path, as_attachment=True)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
